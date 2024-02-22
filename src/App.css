@@ -36,3 +36,48 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.navbar_ul {
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.navbar_ul li {
+  width: calc(98% / 3);
+  text-align: center;
+  border: 1px solid black;
+  float: left;
+  list-style-type: none;
+  background-color: bisque;
+  opacity: 100;
+}
+
+.navbar_ul li a {
+  display: block;
+  text-decoration: none;
+  color: black;
+}
+
+.tour {
+  padding: 20px 0 20px 20px;
+  margin: 15px 0 15px 0;
+  border: 1px solid black;
+}
+
+.tour li {
+  text-align: left;
+  list-style-type: none;
+}
+
+.tour li:first-child {
+  padding-bottom: 10px;
+  font-size: large;
+  font-weight: bold;
+}
