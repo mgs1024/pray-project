@@ -7,8 +7,8 @@ const SearchResult = ({addr , isClicked}) => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [mainLong, setMainLong] = useState(null);
-    const [mainLat, setMainLat] = useState(null);
+    //const [mainLong, setMainLong] = useState(null);
+    //const [mainLat, setMainLat] = useState(null);
     const navigate = useNavigate();    
     const serviceKey = process.env.REACT_APP_API_KEY;
 
@@ -40,10 +40,10 @@ const SearchResult = ({addr , isClicked}) => {
     const onClick = e => {
         const long = e.currentTarget.getAttribute('data-long');
         const lat = e.currentTarget.getAttribute('data-lat');
-        setMainLong(long);
-        setMainLat(lat);
+        //setMainLong(long);
+        //setMainLat(lat);
         console.log(long, lat);
-        console.log(mainLong, mainLat);
+        //console.log(mainLong, mainLat);
         navigate('/map', {state: {mapLong: long, mapLat: lat}});
     };
    

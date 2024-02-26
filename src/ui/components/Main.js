@@ -9,6 +9,12 @@ const Main = () => {
     setAddr(e.target.value);
     setIsClicked(false);
   };
+
+  const onKeyDown = e => {
+    if(e.key === "Enter"){
+      onClick();
+    }
+  };
   
   const onClick = () => {    
     console.log(addr);
@@ -22,7 +28,9 @@ const Main = () => {
       <input
         placeholder="지역명/충전소명 입력"
         onChange={onChange}
+        onKeyDown={onKeyDown}
         value={addr}
+        autoFocus
       />
       <button onClick={onClick}>검색</button>
       <SearchResult addr = {addr} isClicked = {isClicked}/>
