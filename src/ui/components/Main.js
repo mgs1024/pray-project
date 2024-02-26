@@ -1,4 +1,4 @@
-import SearchResult from './SearchResult';
+  import SearchResult from './SearchResult';
 import {useState} from 'react';
 
 const Main = () => {

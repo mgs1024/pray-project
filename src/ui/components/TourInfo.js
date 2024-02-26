@@ -45,7 +45,7 @@ const TourInfo = () => {
       <h1>Info</h1>
       {data &&
         data.map(item => (
-          <table className={'info'}>
+          <table className={'info'} key={item.contentid}>
             <thead></thead>
             <tbody>
               <tr>
@@ -72,7 +72,7 @@ const TourInfo = () => {
         ))}
       {image &&
         image.map(image => (
-          <div className={'imgBox'} key={image.imgname}>
+          <div className={'imgBox'} key={image.serialnum}>
             <img src={image.originimgurl} />
           </div>
         ))}
