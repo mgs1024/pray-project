@@ -72,7 +72,7 @@ const TourInfo = () => {
         ))}
       {image &&
         image.map(image => (
-          <div className={'imgBox'}>
+          <div className={'imgBox'} key={image.imgname}>
             <img src={image.originimgurl} />
           </div>
         ))}
