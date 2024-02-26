@@ -57,8 +57,8 @@ const SearchResult = ({addr , isClicked}) => {
                 <ul
                     className={'tour'}
                     key={item.csid}
-                    data-long={item.lat} 
-                    data-lat={item.longi}
+                    data-long={item.longi} 
+                    data-lat={item.lat}
                     onClick={onClick}
                 >
                     <li>{item.csNm}</li>
