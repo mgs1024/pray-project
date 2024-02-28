@@ -1,5 +1,6 @@
 import {useState, useRef, useEffect} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 const ChargingMap = () => {
   const ref = useRef(null);
@@ -59,7 +60,35 @@ const ChargingMap = () => {
     // setMapLat(lat);
     console.log(long, lat);
     navigate('/tour', {state: {tourLong: long, tourLat: lat}});
-  }; 
+  };
+
+  const favorite = async () => {
+    if (window.confirm('해당 충전소를 즐겨찾기에 추가하겠습니까?')) {
+      const res = await axios.get('http://localhost:3001/favorite');
+      const num = Math.max(...res.data.map(item => item.id));
+      console.log(num);
+
+      const body = {
+        csNm : location.state.csNm,
+        addr : location.state.addr,
+        chargeTp : location.state.chargeTp,
+        cpNm : location.state.cpNm,
+        cpTp : location.state.cpTp,
+        longi : mapLong,
+        lat : mapLat,
+        id : num + 1,
+      }
+  
+      axios.post(`http://localhost:3001/favorite/`, body)
+        .then(res => {
+          console.log('res: ', res);
+          window.alert('즐겨찾기 추가가 완료되었습니다.')
+        })
+        .catch(error => {
+          console.log('error: ', error);
+        })
+    }
+  }
 
   return (
     <div>
@@ -74,7 +103,7 @@ const ChargingMap = () => {
       { location.state &&
         <div>
           <ul className={'tour'}>
-              <li>{location.state.csNm}</li>
+              <li>{location.state.csNm} <button onClick = {favorite}>즐겨찾기</button></li>              
               <li>{location.state.addr}</li>
               <li>
                   {location.state.cpNm} :  
