@@ -71,7 +71,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 
 
+
 *** JSON server
+
 $ npm i -g json-server
+
 $ cd src/ui/db
+
 $ json-server --watch Data.json --port 4000
+
