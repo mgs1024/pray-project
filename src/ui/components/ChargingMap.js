@@ -81,7 +81,7 @@ const ChargingMap = () => {
         id : num + 1,
       }
   
-      axios.post(`http://localhost:3001/favorite/`, body)
+      axios.post(`http://localhost:4000/favorite/`, body)
         .then(res => {
           console.log('res: ', res);
           window.alert('즐겨찾기 추가가 완료되었습니다.')
@@ -108,8 +108,8 @@ const ChargingMap = () => {
               <li>{location.state.csNm} <button onClick = {favorite}>즐겨찾기</button></li>              
               <li>{location.state.addr}</li>
               <li>
-                  {location.state.cpNm} :  
-                  {location.state.cpStat === 1 ? " 충전가능" : location.state.cpStat === 2 ? " 충전중" : location.state.cpStat === 3 ? " 고장/점검" : location.state.cpStat === 4 ? " 통신장애" : " 통신미연결"}
+                  {location.state.cpNm}   
+                  {location.state.cpStat === 1 ? " : 충전가능" : location.state.cpStat === 2 ? " : 충전중" : location.state.cpStat === 3 ? " : 고장/점검" : location.state.cpStat === 4 ? " : 통신장애" : location.state.cpStat === 5 ? " : 통신미연결" : ""}
               </li>
               <li>
                   {location.state.cpTp === 1 ? "B타입(5핀)" : location.state.cpTp === 2 ? "C타입(5핀)" : location.state.cpTp === 3 ?  "BC타입(5핀)" : location.state.cpTp === 4 ? "BC타입(7핀)" : location.state.cpTp === 5 ? 

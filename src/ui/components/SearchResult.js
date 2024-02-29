@@ -7,6 +7,12 @@ const SearchResult = ({addr , isClicked}) => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isEmpty, setIsEmpty] = useState(false);
+    const [page, setPage] = useState({
+        current : 0,
+        total : 0
+    })
+
     //const [mainLong, setMainLong] = useState(null);
     //const [mainLat, setMainLat] = useState(null);
     const navigate = useNavigate();    
@@ -14,16 +20,32 @@ const SearchResult = ({addr , isClicked}) => {
 
     const search = async () => {
     try {
+        let num = page.current + 1;
         setError(null);
         setData(null);
         setLoading(true);
+        setIsEmpty(false);
+        
+        console.log(page.current);     
 
         const response = await axios.get(
-        `/service/EvInfoServiceV2/getEvSearchList?serviceKey=${serviceKey}&pageNo=1&numOfRows=10&addr=${addr}`
+        `/service/EvInfoServiceV2/getEvSearchList?serviceKey=${serviceKey}&pageNo=${num}&numOfRows=10&addr=${addr}`
         );
         console.log(response.data);
-        
-        setData(response.data.response.body.items.item);      
+        console.log(response.data.response.body.totalCount);
+        setPage((prevPage) => ({
+            ...prevPage,
+            current : num,
+            total: response.data.response.body.totalCount,            
+        }));
+        console.log(page.total);
+
+        const newData = response.data.response.body.items.item;
+        setData((prevData) => (prevData ? [...prevData, ...newData] : newData));
+
+        if(response.data.response.body.items === ''){
+            setIsEmpty(true);
+        }
 
     } catch(e) {
         setError(e);
@@ -32,9 +54,11 @@ const SearchResult = ({addr , isClicked}) => {
     };
 
     useEffect(() => {
-        if (addr !== '' && isClicked) {
-            search();
-        }
+        if (addr !== "" && isClicked) {            
+            setData(null);
+            setPage({current:0, total:0});
+            search();           
+          }
     }, [addr, isClicked]);
 
     const onClick = e => {
@@ -63,14 +87,18 @@ const SearchResult = ({addr , isClicked}) => {
             },
           });
     };
+    const showMore = () => {  
+        search();
+    }
    
     if(loading) return <div>Loading...</div>;
     if(error)   return <div>Error...</div>;
+    if(isEmpty) return <div><h3>검색결과가 없습니다.</h3></div>
 
     return(
         <div>
-            {data && <h1>RESULT</h1>}
-            {data && data.map((item) => (
+            {data && page.current === 1 && <h1>RESULT</h1>}
+            {data && Array.isArray(data) ? (data.map((item) => (
                 <ul
                     className={'tour'}
                     key={item.cpid}
@@ -91,10 +119,40 @@ const SearchResult = ({addr , isClicked}) => {
                         {item.cpStat === 1 ? " 충전가능" : item.cpStat === 2 ? " 충전중" : item.cpStat === 3 ? " 고장/점검" : item.cpStat === 4 ? " 통신장애" : " 통신미연결"}
                     </li>
                     <li>
-                        {item.cpTp === 1 ? "B타입(5핀)" : item.cpTp === 2 ? "C타입(5핀)" : item.cpTp === 3 ?  "BC타입(5핀)" : item.cpTp === 4 ? "BC타입(7핀)" : item.cpTp === 5 ? "DC차데모" : item.cpTp === 6 ? "AC3상" : item.cpTp === 7 ? "DC콤보" : "DC차데모+DC콤보"}
+                        {item.cpTp === 1 ? "B타입(5핀)" : item.cpTp === 2 ? "C타입(5핀)" : item.cpTp === 3 ?  "BC타입(5핀)" : item.cpTp === 4 ? "BC타입(7핀)" : item.cpTp === 5 ? 
+                        "DC차데모" : item.cpTp === 6 ? "AC3상" : item.cpTp === 7 ? "DC콤보" : item.cpTp === 8 ? "DC차데모+DC콤보" : item.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
+                    </li>
+                </ul>
+            ))) : ( data && (
+                <ul
+                    className={'tour'}
+                    key={data.cpid}
+                    data-long={data.longi} 
+                    data-lat={data.lat}
+                    data-csnm={data.csNm}
+                    data-addr={data.addr}
+                    data-cpnm={data.cpNm}
+                    data-cpstat={data.cpStat}
+                    data-cptp={data.cpTp}
+                    data-chargetp={data.chargeTp}
+                    onClick={onClick}
+                >
+                    <li>{data.csNm}</li>
+                    <li>{data.addr}</li>
+                    <li>
+                        {data.cpNm} :  
+                        {data.cpStat === 1 ? " 충전가능" : data.cpStat === 2 ? " 충전중" : data.cpStat === 3 ? " 고장/점검" : data.cpStat === 4 ? " 통신장애" : " 통신미연결"}
+                    </li>
+                    <li>
+                        {data.cpTp === 1 ? "B타입(5핀)" : data.cpTp === 2 ? "C타입(5핀)" : data.cpTp === 3 ?  "BC타입(5핀)" : data.cpTp === 4 ? "BC타입(7핀)" : data.cpTp === 5 ? 
+                        "DC차데모" : data.cpTp === 6 ? "AC3상" : data.cpTp === 7 ? "DC콤보" : data.cpTp === 8 ? "DC차데모+DC콤보" : data.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
                     </li>
                 </ul>
             ))}
+            {data && page.current * 10 <= page.total && (
+                <button onClick={showMore}><h1>다음페이지</h1></button>
+            )}
+            <br />
         </div>
     );
 };
