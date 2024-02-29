@@ -48,6 +48,7 @@ const SearchResult = ({addr , isClicked}) => {
         const cpNm = e.currentTarget.getAttribute('data-cpnm');
         const cpStat = e.currentTarget.getAttribute('data-cpstat');
         const cpTp = e.currentTarget.getAttribute('data-cptp');
+        const chargeTp = e.currentTarget.getAttribute('data-chargetp');
         //console.log(mainLong, mainLat);
         navigate('/map', {
             state: {
@@ -58,6 +59,7 @@ const SearchResult = ({addr , isClicked}) => {
               cpNm: cpNm,
               cpStat: cpStat,
               cpTp: cpTp,
+              chargeTp: chargeTp,
             },
           });
     };
@@ -79,6 +81,7 @@ const SearchResult = ({addr , isClicked}) => {
                     data-cpnm={item.cpNm}
                     data-cpstat={item.cpStat}
                     data-cptp={item.cpTp}
+                    data-chargetp={item.chargeTp}
                     onClick={onClick}
                 >
                     <li>{item.csNm}</li>

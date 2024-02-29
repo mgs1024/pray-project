@@ -48,6 +48,8 @@ const TourList = () => {
     navigate('/info', {state: {contentId: item.contentid}});
   };
 
+  console.log(data);
+
   return (
     <div>
       <h1>Tour</h1>
