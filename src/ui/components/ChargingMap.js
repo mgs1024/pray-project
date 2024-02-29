@@ -64,9 +64,11 @@ const ChargingMap = () => {
 
   const favorite = async () => {
     if (window.confirm('해당 충전소를 즐겨찾기에 추가하겠습니까?')) {
-      const res = await axios.get('http://localhost:3001/favorite');
-      const num = Math.max(...res.data.map(item => item.id));
-      console.log(num);
+      const res = await axios.get('http://localhost:4000/favorite');
+      let num = 0;
+      if(res.data.length !== 0) {
+        num = Math.max(...res.data.map(item => item.id));
+      }      
 
       const body = {
         csNm : location.state.csNm,
@@ -110,7 +112,8 @@ const ChargingMap = () => {
                   {location.state.cpStat === 1 ? " 충전가능" : location.state.cpStat === 2 ? " 충전중" : location.state.cpStat === 3 ? " 고장/점검" : location.state.cpStat === 4 ? " 통신장애" : " 통신미연결"}
               </li>
               <li>
-                  {location.state.cpTp === 1 ? "B타입(5핀)" : location.state.cpTp === 2 ? "C타입(5핀)" : location.state.cpTp === 3 ?  "BC타입(5핀)" : location.state.cpTp === 4 ? "BC타입(7핀)" : location.state.cpTp === 5 ? "DC차데모" : location.state.cpTp === 6 ? "AC3상" : location.state.cpTp === 7 ? "DC콤보" : "DC차데모+DC콤보"}
+                  {location.state.cpTp === 1 ? "B타입(5핀)" : location.state.cpTp === 2 ? "C타입(5핀)" : location.state.cpTp === 3 ?  "BC타입(5핀)" : location.state.cpTp === 4 ? "BC타입(7핀)" : location.state.cpTp === 5 ? 
+                  "DC차데모" : location.state.cpTp === 6 ? "AC3상" : location.state.cpTp === 7 ? "DC콤보" : location.state.cpTp === 8 ? "DC차데모+DC콤보" : location.state.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
               </li>
           </ul>
         </div>
