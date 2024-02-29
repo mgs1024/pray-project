@@ -118,6 +118,14 @@
   font-weight: bold;
 }
 
+.imgBox {
+  width: 100%;
+}
+
 .imgBox image {
   position: absolute;
+}
+
+.emptyBox {
+  min-height: 50px;
 }
