@@ -13,12 +13,12 @@ const ChargingMap = () => {
   const mapApiKey = process.env.REACT_APP_MAP_API_KEY;
 
   
+  if (location.state && location.state.mapLong && location.state.mapLat && location.state.csNm) {
+    mapLong = location.state.mapLong;
+    mapLat = location.state.mapLat;
+    csNm = location.state.csNm;
+  }
   useEffect(() => {
-    if (location.state && location.state.mapLong && location.state.mapLat && location.state.csNm) {
-      mapLong = location.state.mapLong;
-      mapLat = location.state.mapLat;
-      csNm = location.state.csNm;
-    }
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${mapApiKey}&callback=initMap&loading=async`;
     script.async = true;
