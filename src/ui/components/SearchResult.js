@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {useNavigate} from 'react-router-dom';
 
 const SearchResult = ({addr , isClicked}) => {
 
-    const [data, setData] = useState(null);
+    const [responseData, setResponseData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEmpty, setIsEmpty] = useState(false);
@@ -18,11 +18,14 @@ const SearchResult = ({addr , isClicked}) => {
     const navigate = useNavigate();    
     const serviceKey = process.env.REACT_APP_API_KEY;
 
+    const scrollRef = useRef(0);
+
     const search = async () => {
     try {
+        console.log(responseData);
         let num = page.current + 1;
         setError(null);
-        setData(null);
+        //setData(null);
         setLoading(true);
         setIsEmpty(false);
         
@@ -31,8 +34,9 @@ const SearchResult = ({addr , isClicked}) => {
         const response = await axios.get(
         `/service/EvInfoServiceV2/getEvSearchList?serviceKey=${serviceKey}&pageNo=${num}&numOfRows=10&addr=${addr}`
         );
-        console.log(response.data);
-        console.log(response.data.response.body.totalCount);
+        //console.log(response.data);
+        console.log(responseData);
+        //console.log(response.data.response.body.totalCount);
         setPage((prevPage) => ({
             ...prevPage,
             current : num,
@@ -41,12 +45,17 @@ const SearchResult = ({addr , isClicked}) => {
         console.log(page.total);
 
         const newData = response.data.response.body.items.item;
-        setData((prevData) => (prevData ? [...prevData, ...newData] : newData));
-
+        console.log(newData);
+        console.log(responseData);
+        setResponseData((responseData) => (responseData ? [...responseData, ...newData] : newData));
+        //console.log([...responseData, ...newData]);
+        console.log(responseData);
         if(response.data.response.body.items === ''){
             setIsEmpty(true);
-        }
-
+        } 
+        console.log(scrollRef.current);      
+        window.scrollTo(0, scrollRef.current);     
+        
     } catch(e) {
         setError(e);
     }
@@ -54,12 +63,14 @@ const SearchResult = ({addr , isClicked}) => {
     };
 
     useEffect(() => {
+        setPage({current:0, total:0});
         if (addr !== "" && isClicked) {            
-            setData(null);
-            setPage({current:0, total:0});
-            search();           
+            setResponseData(null);
+            search();                      
           }
-    }, [addr, isClicked]);
+        //   console.log(scrollRef.current);      
+        //   window.scrollTo(0, scrollRef.current);        
+    }, [addr, isClicked, scrollRef.current]);
 
     const onClick = e => {
         const long = e.currentTarget.getAttribute('data-long');
@@ -88,6 +99,9 @@ const SearchResult = ({addr , isClicked}) => {
           });
     };
     const showMore = () => {  
+        scrollRef.current = window.scrollY;
+        console.log(scrollRef.current);
+                
         search();
     }
    
@@ -97,8 +111,8 @@ const SearchResult = ({addr , isClicked}) => {
 
     return(
         <div>
-            {data && page.current === 1 && <h1>RESULT</h1>}
-            {data && Array.isArray(data) ? (data.map((item) => (
+            {responseData && page.current === 1 && <h1>RESULT</h1>}
+            {responseData && Array.isArray(responseData) ? (responseData.map((item) => (
                 <ul
                     className={'tour'}
                     key={item.cpid}
@@ -123,35 +137,37 @@ const SearchResult = ({addr , isClicked}) => {
                         "DC차데모" : item.cpTp === 6 ? "AC3상" : item.cpTp === 7 ? "DC콤보" : item.cpTp === 8 ? "DC차데모+DC콤보" : item.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
                     </li>
                 </ul>
-            ))) : ( data && (
+            ))) : ( responseData && (
                 <ul
                     className={'tour'}
-                    key={data.cpid}
-                    data-long={data.longi} 
-                    data-lat={data.lat}
-                    data-csnm={data.csNm}
-                    data-addr={data.addr}
-                    data-cpnm={data.cpNm}
-                    data-cpstat={data.cpStat}
-                    data-cptp={data.cpTp}
-                    data-chargetp={data.chargeTp}
+                    key={responseData.cpid}
+                    data-long={responseData.longi} 
+                    data-lat={responseData.lat}
+                    data-csnm={responseData.csNm}
+                    data-addr={responseData.addr}
+                    data-cpnm={responseData.cpNm}
+                    data-cpstat={responseData.cpStat}
+                    data-cptp={responseData.cpTp}
+                    data-chargetp={responseData.chargeTp}
                     onClick={onClick}
                 >
-                    <li>{data.csNm}</li>
-                    <li>{data.addr}</li>
+                    <li>{responseData.csNm}</li>
+                    <li>{responseData.addr}</li>
                     <li>
-                        {data.cpNm} :  
-                        {data.cpStat === 1 ? " 충전가능" : data.cpStat === 2 ? " 충전중" : data.cpStat === 3 ? " 고장/점검" : data.cpStat === 4 ? " 통신장애" : " 통신미연결"}
+                        {responseData.cpNm} :  
+                        {responseData.cpStat === 1 ? " 충전가능" : responseData.cpStat === 2 ? " 충전중" : responseData.cpStat === 3 ? " 고장/점검" : responseData.cpStat === 4 ? " 통신장애" : " 통신미연결"}
                     </li>
                     <li>
-                        {data.cpTp === 1 ? "B타입(5핀)" : data.cpTp === 2 ? "C타입(5핀)" : data.cpTp === 3 ?  "BC타입(5핀)" : data.cpTp === 4 ? "BC타입(7핀)" : data.cpTp === 5 ? 
-                        "DC차데모" : data.cpTp === 6 ? "AC3상" : data.cpTp === 7 ? "DC콤보" : data.cpTp === 8 ? "DC차데모+DC콤보" : data.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
+                        {responseData.cpTp === 1 ? "B타입(5핀)" : responseData.cpTp === 2 ? "C타입(5핀)" : responseData.cpTp === 3 ?  "BC타입(5핀)" : responseData.cpTp === 4 ? "BC타입(7핀)" : responseData.cpTp === 5 ? 
+                        "DC차데모" : responseData.cpTp === 6 ? "AC3상" : responseData.cpTp === 7 ? "DC콤보" : responseData.cpTp === 8 ? "DC차데모+DC콤보" : responseData.cpTp === 9 ? "DC차데모+AC3상" : "DC차데모+DC콤보+AC3상"}
                     </li>
                 </ul>
             ))}
-            {data && page.current * 10 <= page.total && (
-                <button onClick={showMore}><h1>다음페이지</h1></button>
+            {responseData && page.current * 10 <= page.total && (
+                <button onClick={showMore}><h3>더보기</h3></button>
             )}
+            <br />
+            <br />
             <br />
         </div>
     );
