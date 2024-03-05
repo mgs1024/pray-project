@@ -1,7 +1,8 @@
 import axios from 'axios';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useInView} from 'react-intersection-observer';
+import {AppContext} from '../../App';
 
 const TourList = () => {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ const TourList = () => {
   const searchKey = 'locationBasedList1';
   const serviceKey =
     '1s%2F8YBFyhR5rW1nadGx2niB4GW7BohRLFNbFjtF8S4%2FtnV0tAeCBed6AYO%2Fjq0fyi7Ceq933829psbDswpP5Jw%3D%3D';
+  const coordinate = useContext(AppContext);
+  coordinate.long = location.state.tourLong;
+  coordinate.lat = location.state.tourLat;
 
   const getData = async () => {
     if (totalCnt >= pageCnt) {
@@ -42,10 +46,17 @@ const TourList = () => {
     if (inView) {
       getData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   const onClick = item => {
-    navigate('/info', {state: {contentId: item.contentid}});
+    navigate('/info', {
+      state: {
+        contentId: item.contentid,
+        mapLong: Number(item.mapx).toFixed(6),
+        mapLat: Number(item.mapy).toFixed(6),
+      },
+    });
   };
 
   console.log(data);
