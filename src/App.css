@@ -118,6 +118,40 @@
   font-weight: bold;
 }
 
+.imgBox {
+  width: 100%;
+}
+
 .imgBox image {
   position: absolute;
+}
+
+.emptyBox {
+  min-height: 50px;
+}
+
+.call {
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.call li {
+  width: calc(100% / 2);
+  text-align: center;
+  list-style-type: none;
+  float: left;
+}
+
+.tourMap {
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.tourMap li {
+  margin-top: 10px;
+  padding: 20px 0 20px 5px;
+  font-weight: bold;
+  border: 2px solid black;
 }
