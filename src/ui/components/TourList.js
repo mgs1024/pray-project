@@ -17,8 +17,12 @@ const TourList = () => {
   const serviceKey =
     '1s%2F8YBFyhR5rW1nadGx2niB4GW7BohRLFNbFjtF8S4%2FtnV0tAeCBed6AYO%2Fjq0fyi7Ceq933829psbDswpP5Jw%3D%3D';
   const coordinate = useContext(AppContext);
-  coordinate.lng = Number(location.state.tourLong).toFixed(6);
-  coordinate.lat = Number(location.state.tourLat).toFixed(6);
+  coordinate.chargingStation.lng = Number(
+    Number(location.state.tourLong).toFixed(6),
+  );
+  coordinate.chargingStation.lat = Number(
+    Number(location.state.tourLat).toFixed(6),
+  );
 
   const getData = async () => {
     if (totalCnt >= pageCnt) {
