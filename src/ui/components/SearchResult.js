@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {useNavigate} from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const SearchResult = ({addr , isClicked}) => {
 
@@ -18,12 +19,9 @@ const SearchResult = ({addr , isClicked}) => {
     const navigate = useNavigate();    
     const serviceKey = process.env.REACT_APP_API_KEY;
 
-    const scrollRef = useRef(0);
-
-    const search = async () => {
+    const search = async (startIndex) => {
     try {
-        console.log(responseData);
-        let num = page.current + 1;
+        // let num = page.current + 1;
         setError(null);
         //setData(null);
         setLoading(true);
@@ -32,45 +30,37 @@ const SearchResult = ({addr , isClicked}) => {
         console.log(page.current);     
 
         const response = await axios.get(
-        `/service/EvInfoServiceV2/getEvSearchList?serviceKey=${serviceKey}&pageNo=${num}&numOfRows=10&addr=${addr}`
+        `/service/EvInfoServiceV2/getEvSearchList?serviceKey=${serviceKey}&pageNo=${startIndex + 1}&numOfRows=10&addr=${addr}`
         );
-        //console.log(response.data);
-        console.log(responseData);
-        //console.log(response.data.response.body.totalCount);
-        setPage((prevPage) => ({
-            ...prevPage,
-            current : num,
-            total: response.data.response.body.totalCount,            
-        }));
-        console.log(page.total);
+        // setPage((prevPage) => ({
+        //     ...prevPage,
+        //     current : num,
+        //     total: response.data.response.body.totalCount,            
+        // }));
+        // console.log(page.total);
 
         const newData = response.data.response.body.items.item;
         console.log(newData);
-        console.log(responseData);
-        setResponseData((responseData) => (responseData ? [...responseData, ...newData] : newData));
+        setResponseData((prevData) => (
+            newData
+              ? Array.isArray(newData)
+                ? [...(prevData || []), ...newData]
+                : [...(prevData || []), newData]
+              : prevData || []
+          ));
         //console.log([...responseData, ...newData]);
         console.log(responseData);
         if(response.data.response.body.items === ''){
             setIsEmpty(true);
         } 
-        console.log(scrollRef.current);      
-        window.scrollTo(0, scrollRef.current);     
+        // console.log(scrollRef.current);      
+        // window.scrollTo(0, scrollRef.current);     
         
     } catch(e) {
         setError(e);
     }
     setLoading(false);
     };
-
-    useEffect(() => {
-        setPage({current:0, total:0});
-        if (addr !== "" && isClicked) {            
-            setResponseData(null);
-            search();                      
-          }
-        //   console.log(scrollRef.current);      
-        //   window.scrollTo(0, scrollRef.current);        
-    }, [addr, isClicked, scrollRef.current]);
 
     const onClick = e => {
         const long = e.currentTarget.getAttribute('data-long');
@@ -98,12 +88,48 @@ const SearchResult = ({addr , isClicked}) => {
             },
           });
     };
-    const showMore = () => {  
-        scrollRef.current = window.scrollY;
-        console.log(scrollRef.current);
+
+    const showMore = () => {
+        const num = page.current + 1;
+        setPage((prevPage) => ({
+          ...prevPage,
+          current: num,
+        }));
+        search(num);
+      };
+    
+    const handleScroll = () => {
+        if (
+            window.innerHeight + document.documentElement.scrollTop ===
+            document.documentElement.offsetHeight
+        ) {
+            showMore();
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    useEffect(() => {
+        setPage({current:0, total:0});
+        if (addr !== "" && isClicked) {            
+            setResponseData(null);
+            search();                      
+          }
+        //   console.log(scrollRef.current);      
+        //   window.scrollTo(0, scrollRef.current);        
+    }, [addr, isClicked]);
+
+    // const showMore = () => {  
+    //     scrollRef.current = window.scrollY;
+    //     console.log(scrollRef.current);
                 
-        search();
-    }
+    //     search();
+    // }
    
     if(loading) return <div>Loading...</div>;
     if(error)   return <div>Error...</div>;
@@ -112,19 +138,25 @@ const SearchResult = ({addr , isClicked}) => {
     return(
         <div>
             {responseData && page.current === 1 && <h1>RESULT</h1>}
+            <InfiniteScroll
+                dataLength={responseData && responseData.length}
+                next={showMore}
+                hasMore={page.current * 10 < page.total}
+                loader={<h4>Loading...</h4>}
+            >
             {responseData && Array.isArray(responseData) ? (responseData.map((item) => (
                 <ul
-                    className={'tour'}
-                    key={item.cpid}
-                    data-long={item.longi} 
-                    data-lat={item.lat}
-                    data-csnm={item.csNm}
-                    data-addr={item.addr}
-                    data-cpnm={item.cpNm}
-                    data-cpstat={item.cpStat}
-                    data-cptp={item.cpTp}
-                    data-chargetp={item.chargeTp}
-                    onClick={onClick}
+                className={'tour'}
+                key={item.cpid}
+                data-long={item.longi} 
+                data-lat={item.lat}
+                data-csnm={item.csNm}
+                data-addr={item.addr}
+                data-cpnm={item.cpNm}
+                data-cpstat={item.cpStat}
+                data-cptp={item.cpTp}
+                data-chargetp={item.chargeTp}
+                onClick={onClick}
                 >
                     <li>{item.csNm}</li>
                     <li>{item.addr}</li>
@@ -139,17 +171,17 @@ const SearchResult = ({addr , isClicked}) => {
                 </ul>
             ))) : ( responseData && (
                 <ul
-                    className={'tour'}
-                    key={responseData.cpid}
-                    data-long={responseData.longi} 
-                    data-lat={responseData.lat}
-                    data-csnm={responseData.csNm}
-                    data-addr={responseData.addr}
-                    data-cpnm={responseData.cpNm}
-                    data-cpstat={responseData.cpStat}
-                    data-cptp={responseData.cpTp}
-                    data-chargetp={responseData.chargeTp}
-                    onClick={onClick}
+                className={'tour'}
+                key={responseData.cpid}
+                data-long={responseData.longi} 
+                data-lat={responseData.lat}
+                data-csnm={responseData.csNm}
+                data-addr={responseData.addr}
+                data-cpnm={responseData.cpNm}
+                data-cpstat={responseData.cpStat}
+                data-cptp={responseData.cpTp}
+                data-chargetp={responseData.chargeTp}
+                onClick={onClick}
                 >
                     <li>{responseData.csNm}</li>
                     <li>{responseData.addr}</li>
@@ -163,12 +195,7 @@ const SearchResult = ({addr , isClicked}) => {
                     </li>
                 </ul>
             ))}
-            {responseData && page.current * 10 <= page.total && (
-                <button onClick={showMore}><h3>더보기</h3></button>
-            )}
-            <br />
-            <br />
-            <br />
+            </InfiniteScroll> 
         </div>
     );
 };
