@@ -17,8 +17,8 @@ const TourList = () => {
   const serviceKey =
     '1s%2F8YBFyhR5rW1nadGx2niB4GW7BohRLFNbFjtF8S4%2FtnV0tAeCBed6AYO%2Fjq0fyi7Ceq933829psbDswpP5Jw%3D%3D';
   const coordinate = useContext(AppContext);
-  coordinate.long = location.state.tourLong;
-  coordinate.lat = location.state.tourLat;
+  coordinate.lng = Number(location.state.tourLong).toFixed(6);
+  coordinate.lat = Number(location.state.tourLat).toFixed(6);
 
   const getData = async () => {
     if (totalCnt >= pageCnt) {
@@ -75,7 +75,7 @@ const TourList = () => {
             <li>{item.dist.split('.')[0]}m</li>
           </ul>
         ))}
-      <div ref={ref}></div>
+      <div ref={ref} style={{height: '20px'}}></div>
     </div>
   );
 };
