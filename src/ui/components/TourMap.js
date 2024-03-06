@@ -1,10 +1,10 @@
 import {useContext, useEffect, useRef, useState} from 'react';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import Modal from 'react-modal';
 import {AppContext} from '../../App';
 
 const TourMap = () => {
-  const coordinate = useContext(AppContext);
+  const navigate = useNavigate();
   const ref = useRef(null);
   const [marker, setMarker] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,9 @@ const TourMap = () => {
   let mapLat = 37.5665;
   let csNm = '';
   const mapApiKey = process.env.REACT_APP_MAP_API_KEY;
+  const coordinate = useContext(AppContext);
+  coordinate.tour.lng = Number(Number(location.state.mapLong).toFixed(6));
+  coordinate.tour.lat = Number(Number(location.state.mapLat).toFixed(6));
 
   if (
     location.state &&
@@ -78,6 +81,11 @@ const TourMap = () => {
       padding: '20px',
     },
   };
+
+  const onClick = n => {
+    coordinate.flag = n;
+    navigate('/directions');
+  };
   console.log(coordinate);
 
   return (
@@ -98,8 +106,12 @@ const TourMap = () => {
             appElement={document.getElementById('root') || undefined}>
             <h1 style={{textAlign: 'center'}}>경로 안내</h1>
             <ul style={{listStyleType: 'none'}} className={'tourMap'}>
-              <li>현재위치 -> {location.state.csNm}</li>
-              <li>충전소 -> {location.state.csNm}</li>
+              <li onClick={() => onClick(1)}>
+                현재위치 -> {location.state.csNm}
+              </li>
+              <li onClick={() => onClick(2)}>
+                충전소 -> {location.state.csNm}
+              </li>
               <li style={{textAlign: 'center', border: 'none'}}>
                 <button onClick={closeModal}>닫기</button>
               </li>
