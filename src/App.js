@@ -7,13 +7,14 @@ import Favorite from './ui/components/Favorite';
 import TourInfo from './ui/components/TourInfo';
 import TourMap from './ui/components/TourMap';
 import {createContext} from 'react';
+import DirectionsMap from './ui/components/DirectionsMap';
 export const AppContext = createContext();
 
 function App() {
   const coordi = {
-    csNm: '',
-    long: '',
-    lat: '',
+    flag: Number,
+    chargingStation: {lat: Number, lng: Number},
+    tour: {lat: Number, lng: Number},
   };
   return (
     <div className="App">
@@ -25,6 +26,7 @@ function App() {
           <Route path={'/favorite'} element={<Favorite />} />
           <Route path={'/info'} element={<TourInfo />} />
           <Route path={'/tourMap'} element={<TourMap />} />
+          <Route path={'/directions'} element={<DirectionsMap />} />
         </Routes>
       </AppContext.Provider>
     </div>
